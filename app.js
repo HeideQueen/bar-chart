@@ -28,9 +28,12 @@ function generateBarChart(data) {
     .attr('overflow', 'visible')
     .style('background-color', 'azure');
 
+  const minYear = d3.min(data, d => d[0]);
+  const maxYear = d3.max(data, d => d[0]);
+
   const xScale = d3
-    .scaleLinear()
-    .domain([0, data.length])
+    .scaleTime()
+    .domain([new Date(minYear), new Date(maxYear)])
     .range([0, w]);
 
   const yScale = d3
@@ -46,7 +49,7 @@ function generateBarChart(data) {
     .attr('class', 'bar')
     .attr('data-date', d => d[0])
     .attr('data-gdp', d => d[1])
-    .attr('x', (d, i) => xScale(i))
+    .attr('x', d => xScale(new Date(d[0])))
     .attr('y', d => yScale(d[1]))
     .attr('width', '2')
     .attr('height', d => h - yScale(d[1]))
@@ -62,7 +65,7 @@ function generateBarChart(data) {
         .style('left', `${d3.event.pageX}px`)
         .style('top', `${d3.event.pageY}px`);
     })
-    .on('mouseout', d => {
+    .on('mouseout', () => {
       div
         .transition()
         .duration(500)
